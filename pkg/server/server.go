@@ -84,7 +84,7 @@ func (s *SSEServer) Start() {
 				// attached client, push the new message
 				// into the client's message channel.
 				s.mu.Lock()
-				for client, _ := range s.clients {
+				for client := range s.clients {
 					client <- event
 				}
 				s.mu.Unlock()

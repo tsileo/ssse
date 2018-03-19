@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-// ErrInvalidClient is returned when a client tries to subscribe without a channel or a callback
+// ErrInvalidSubscriberArgs is returned when a client tries to subscribe without a channel or a callback
 var ErrInvalidSubscribeArgs = errors.New("must provides at leat a channel or a callback func in order to subscribe")
 
 var (
