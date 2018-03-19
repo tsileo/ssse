@@ -19,10 +19,9 @@ var (
 	headerData  = []byte("data:")
 )
 
-// SSEServer holds the client state
+// SSEClient holds the client state
 type SSEClient struct {
-	url  string
-	stop chan bool
+	url string
 }
 
 // Event holds the event fields
@@ -33,11 +32,7 @@ type Event struct {
 
 // New initialize a new client
 func New(url string) *SSEClient {
-	return &SSEClient{url, make(chan bool, 1)}
-}
-
-func (c *SSEClient) Stop() {
-	c.stop <- true
+	return &SSEClient{url}
 }
 
 // Subscribe connects to the server-sent event endpoint.
@@ -69,8 +64,6 @@ func (c *SSEClient) Subscribe(events chan<- *Event, callback func(*Event) error)
 			return err
 		}
 		switch {
-		//case <-c.stop:
-		//	return nil
 		case bytes.HasPrefix(line, headerEvent):
 			if event == nil {
 				event = &Event{}
@@ -98,6 +91,4 @@ func (c *SSEClient) Subscribe(events chan<- *Event, callback func(*Event) error)
 			}
 		}
 	}
-
-	return nil
 }
