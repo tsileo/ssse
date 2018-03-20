@@ -22,7 +22,8 @@ var (
 
 // SSEClient holds the client state
 type SSEClient struct {
-	url string
+	url                string
+	Username, Password string
 }
 
 // Event holds the event fields
@@ -50,6 +51,10 @@ func (c *SSEClient) Subscribe(events chan<- *Event, callback func(*Event) error,
 	req, err := http.NewRequest("GET", c.url+"?"+vs.Encode(), nil)
 	if err != nil {
 		return err
+	}
+
+	if c.Username != "" || c.Password != "" {
+		req.SetBasicAuth(c.Username, c.Password)
 	}
 
 	req.Header.Set("Accept", "text/event-stream")
