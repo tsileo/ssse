@@ -9,9 +9,10 @@ import (
 	"bytes"
 	"errors"
 	"net/http"
+	"net/url"
 )
 
-// ErrInvalidSubscriberArgs is returned when a client tries to subscribe without a channel or a callback
+// ErrInvalidSubscribeArgs is returned when a client tries to subscribe without a channel or a callback
 var ErrInvalidSubscribeArgs = errors.New("must provides at leat a channel or a callback func in order to subscribe")
 
 var (
@@ -36,11 +37,17 @@ func New(url string) *SSEClient {
 }
 
 // Subscribe connects to the server-sent event endpoint.
-func (c *SSEClient) Subscribe(events chan<- *Event, callback func(*Event) error) error {
+func (c *SSEClient) Subscribe(events chan<- *Event, callback func(*Event) error, filterEvents ...string) error {
 	if events == nil && callback == nil {
 		return ErrInvalidSubscribeArgs
 	}
-	req, err := http.NewRequest("GET", c.url, nil)
+
+	vs := url.Values{}
+	for _, evt := range filterEvents {
+		vs.Add("event", evt)
+	}
+
+	req, err := http.NewRequest("GET", c.url+"?"+vs.Encode(), nil)
 	if err != nil {
 		return err
 	}
